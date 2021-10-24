@@ -1,0 +1,11 @@
+# Python venv
+/venv/
+
+# Jetbrains IDE
+/.idea/
+
+# Log Folder
+/Log/
+
+# Test script
+test.py
