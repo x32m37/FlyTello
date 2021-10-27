@@ -223,6 +223,7 @@ class TelloDB:
             task_list = task["task"]
             task_sync = task["sync"]
             tello_index = task["tello"]
+            cmd_repeat = task["repeat"]
             id_fulfil = task["id_fulfil"]
             # Determine if id_fulfil is ok
             for id_need in id_fulfil:
@@ -236,7 +237,7 @@ class TelloDB:
                     ok = (not tello.busy) and ok
                     if not ok:
                         break
-            # Generate command if ok
+            # Generate command
             if ok:
                 # Generate for task sync
                 if task_sync:
@@ -245,6 +246,13 @@ class TelloDB:
                         tello = self.__info2tello(index=item[1])
                         cmd = item[0]
                         # Add to datagram list
+                        if cmd_repeat:
+                            datagram.append(
+                                (
+                                    cmd.encode("utf-8", errors="ignore"),
+                                    (tello.get_basic_info()["ip"], 8889)
+                                )
+                            )
                         datagram.append(
                             (
                                 cmd.encode("utf-8", errors="ignore"),
@@ -262,6 +270,13 @@ class TelloDB:
                         # Not busy & haven't exec command
                         if (not tello.busy) and (not tello.task_query_status(task_id)):
                             # Add to datagram list
+                            if cmd_repeat:
+                                datagram.append(
+                                    (
+                                        cmd.encode("utf-8", errors="ignore"),
+                                        (tello.get_basic_info()["ip"], 8889)
+                                    )
+                                )
                             datagram.append(
                                 (
                                     cmd.encode("utf-8", errors="ignore"),
@@ -273,7 +288,7 @@ class TelloDB:
         return datagram
 
     "Task Manage"
-    def task_add(self, task_id: int, task_list: list, blocking: bool, sync: bool, id_fulfil: list):
+    def task_add(self, task_id: int, task_list: list, blocking: bool, sync: bool, repeat: bool, id_fulfil: list):
         """Add task to queue."""
         # Get index of tello that is related
         related_tello_index = [item[1] for item in task_list]
@@ -285,7 +300,8 @@ class TelloDB:
                 "blocking": blocking,
                 "sync": sync,
                 "tello": related_tello_index,
-                "id_fulfil": id_fulfil
+                "id_fulfil": id_fulfil,
+                "repeat": repeat
             }
         )
         # Add to trace

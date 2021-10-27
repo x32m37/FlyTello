@@ -118,7 +118,7 @@ class Control:
             for i in index:
                 self.__cmd2datagram(cmd, i)
 
-    def exec(self, blocking: bool = True, sync: bool = False, id_fulfil: list = []):
+    def exec(self, blocking: bool = True, sync: bool = False, repeat: bool = True, id_fulfil: list = []):
         """
         Execute cmd in exec queue & print result when finished.
 
@@ -129,7 +129,7 @@ class Control:
         """
         self.__exec_id += 1
         # Pass task to TelloDB
-        self.TelloDB.task_add(self.__exec_id, self.__exec_queue, blocking, sync, id_fulfil)
+        self.TelloDB.task_add(self.__exec_id, self.__exec_queue, blocking, sync, repeat, id_fulfil)
         self.__log.info(f"Exec - Called TelloDB add task[{self.__exec_id}]. - {self.__exec_queue}, {blocking},"
                         f"{sync}, {id_fulfil}.")
         self.__exec_queue = []
