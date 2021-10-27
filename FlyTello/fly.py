@@ -50,18 +50,18 @@ class Control:
         while not self.TelloDB.query_scan_status():
             # Broadcast to ap mode.
             self.CommandServer.broadcast("command", 8889)
-            time.sleep(0.33)
+            time.sleep(0.5)
             while self.CommandServer.read_new:
                 self.CommandServer.read()
             # Broadcast to ask sn
             self.CommandServer.broadcast("sn?", 8889)
-            time.sleep(0.33)
+            time.sleep(0.5)
             while self.CommandServer.read_new:
                 datagram = self.CommandServer.read()
                 self.TelloDB.add_tello(datagram[1][0], datagram[0])
                 self.__log.info(f"scan_tello: Passed datagram to TelloDB - {datagram}")
             # Wait for status update
-            time.sleep(0.33)
+            time.sleep(0.5)
             # List details of tello found.
             print(self.TelloDB.query_object_info())
 
