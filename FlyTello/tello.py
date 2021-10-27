@@ -1,5 +1,6 @@
 from FlyTello import quicklog  # Logger setup script
 import typing  # Union type
+import time
 import io  # Provide binary stream type
 
 
@@ -103,6 +104,7 @@ class Tello:
         self.__index = index
         # Task control related
         self.__cmd = ""
+        self.busy_time = 0
         self.__task_id = 0
         self.__task_done = []
         self.busy = False  # Indicates executing command
@@ -123,6 +125,7 @@ class Tello:
         """Update task info."""
         self.__cmd = task_cmd
         self.__task_id = task_id
+        self.busy_time = time.time()
         self.busy = True
 
     def task_exec_result(self, result: str):
@@ -196,6 +199,11 @@ class TelloDB:
     "CronJob"
     def cronjob(self):
         """Function that regularly called. Check task status & generate command."""
+        # Check tello timeout
+        timeout = 8  # Unit: second
+        for tello in self.__TelloObjects:
+            if (time.time() - tello.busy_time) >= timeout and tello.busy:
+                tello.task_exec_result("Timeout")
         # Check task status
         for task in self.__task_work:
             # Get task info
