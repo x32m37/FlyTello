@@ -60,8 +60,11 @@ class Control:
                 datagram = self.CommandServer.read()
                 self.TelloDB.add_tello(datagram[1][0], datagram[0])
                 self.__log.info(f"scan_tello: Passed datagram to TelloDB - {datagram}")
-            # Wait for status update
+            # Start motor prevent overheat
+            self.CommandServer.broadcast("motoron", 8889)
             time.sleep(0.5)
+            while self.CommandServer.read_new:
+                self.CommandServer.read()
             # List details of tello found.
             print(self.TelloDB.query_object_info())
 
@@ -118,10 +121,11 @@ class Control:
             for i in index:
                 self.__cmd2datagram(cmd, i)
 
-    def exec(self, blocking: bool = True, sync: bool = False, repeat: bool = True, id_fulfil: list = []):
+    def exec(self, blocking: bool = True, sync: bool = False, repeat: bool = True, id_fulfil: list = ()):
         """
         Execute cmd in exec queue & print result when finished.
 
+        :param repeat: Will send the datagram twice to compensate drop packet.
         :param blocking: Func exit when task finish.
         :param sync: Ensure all the drones exec the task at the same time.
         :param id_fulfil: If this exist. The task will start when all the task in given list is done.
@@ -294,39 +298,39 @@ class Control:
 
     "EXT"
 
-    def EXT_top_led_static(self, r: int, g: int, b: int, index):
-        self.__cmd2datagram(f"EXT led {r} {g} {b}", index)
+    def ext_top_led_static(self, r: int, g: int, b: int, index):
+        self.__cmd2datagram(f"ext led {r} {g} {b}", index)
 
-    def EXT_top_led_breath(self, r: int, g: int, b: int, freq: float, index):
-        self.__cmd2datagram(f"EXT led br {freq} {r} {g} {b}", index)
+    def ext_top_led_breath(self, r: int, g: int, b: int, freq: float, index):
+        self.__cmd2datagram(f"ext led br {freq} {r} {g} {b}", index)
 
-    def EXT_top_led_switch(self, r1: int, g1: int, b1: int, r2: int, g2: int, b2: int, freq: float, index):
-        self.__cmd2datagram(f"EXT led bl {freq} {r1} {g1} {b1} {r2} {g2} {b2}", index)
+    def ext_top_led_switch(self, r1: int, g1: int, b1: int, r2: int, g2: int, b2: int, freq: float, index):
+        self.__cmd2datagram(f"ext led bl {freq} {r1} {g1} {b1} {r2} {g2} {b2}", index)
 
-    def EXT_mon_graph(self, graph: str, index):
-        self.__cmd2datagram(f"EXT mled g {graph}", index)
+    def ext_mon_graph(self, graph: str, index):
+        self.__cmd2datagram(f"ext mled g {graph}", index)
 
-    def EXT_mon_word_banner(self, msg: str, direction: str, color: str, freq: float, index):
-        self.__cmd2datagram(f"EXT mled {direction} {color} {freq} {msg}", index)
+    def ext_mon_word_banner(self, msg: str, direction: str, color: str, freq: float, index):
+        self.__cmd2datagram(f"ext mled {direction} {color} {freq} {msg}", index)
 
-    def EXT_mon_graph_banner(self, graph: str, direction: str, color: str, freq: float, index):
-        self.__cmd2datagram(f"EXT mled g {direction} {color} {freq} {graph}", index)
+    def ext_mon_graph_banner(self, graph: str, direction: str, color: str, freq: float, index):
+        self.__cmd2datagram(f"ext mled g {direction} {color} {freq} {graph}", index)
 
-    def EXT_mon_char(self, char: str, color: str, index):
+    def ext_mon_char(self, char: str, color: str, index):
         # P.S. if char == "heart" ==> display heart ^ w ^
-        self.__cmd2datagram(f"EXT mled s {color} {char}", index)
+        self.__cmd2datagram(f"ext mled s {color} {char}", index)
 
-    def EXT_mon_default(self, graph: str, index):
-        self.__cmd2datagram(f"EXT mled sg {graph}", index)
+    def ext_mon_default(self, graph: str, index):
+        self.__cmd2datagram(f"ext mled sg {graph}", index)
 
-    def EXT_mon_reset(self, index):
-        self.__cmd2datagram("EXT mled sc", index)
+    def ext_mon_reset(self, index):
+        self.__cmd2datagram("ext mled sc", index)
 
-    def EXT_mon_brightness(self, brightness: int, index):
-        self.__cmd2datagram(f"EXT mled sl {brightness}", index)
+    def ext_mon_brightness(self, brightness: int, index):
+        self.__cmd2datagram(f"ext mled sl {brightness}", index)
 
-    def EXT_read_tof(self, index):
-        self.__cmd2datagram("EXT tof?", index)
+    def ext_read_tof(self, index):
+        self.__cmd2datagram("ext tof?", index)
 
-    def EXT_read_version(self, index):
-        self.__cmd2datagram("EXT version?", index)
+    def ext_read_version(self, index):
+        self.__cmd2datagram("ext version?", index)
