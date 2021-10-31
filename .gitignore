@@ -8,4 +8,7 @@
 /Log/
 
 # Test script
-test.py
+test*.py
+
+# Pycache
+FlyTello/__pycache__
