@@ -50,12 +50,12 @@ class Control:
         while not self.TelloDB.query_scan_status():
             # Broadcast to ap mode.
             self.CommandServer.broadcast("command", 8889)
-            time.sleep(0.5)
+            time.sleep(1)
             while self.CommandServer.read_new:
                 self.CommandServer.read()
             # Broadcast to ask sn
             self.CommandServer.broadcast("sn?", 8889)
-            time.sleep(0.5)
+            time.sleep(1)
             while self.CommandServer.read_new:
                 datagram = self.CommandServer.read()
                 self.TelloDB.add_tello(datagram[1][0], datagram[0])
@@ -297,40 +297,39 @@ class Control:
         self.__cmd2datagram("mdirection 2", index)
 
     "EXT"
-
     def ext_top_led_static(self, r: int, g: int, b: int, index):
-        self.__cmd2datagram(f"ext led {r} {g} {b}", index)
+        self.__cmd2datagram(f"EXT led {r} {g} {b}", index)
 
     def ext_top_led_breath(self, r: int, g: int, b: int, freq: float, index):
-        self.__cmd2datagram(f"ext led br {freq} {r} {g} {b}", index)
+        self.__cmd2datagram(f"EXT led br {freq} {r} {g} {b}", index)
 
     def ext_top_led_switch(self, r1: int, g1: int, b1: int, r2: int, g2: int, b2: int, freq: float, index):
-        self.__cmd2datagram(f"ext led bl {freq} {r1} {g1} {b1} {r2} {g2} {b2}", index)
+        self.__cmd2datagram(f"EXT led bl {freq} {r1} {g1} {b1} {r2} {g2} {b2}", index)
 
     def ext_mon_graph(self, graph: str, index):
-        self.__cmd2datagram(f"ext mled g {graph}", index)
+        self.__cmd2datagram(f"EXT mled g {graph}", index)
 
     def ext_mon_word_banner(self, msg: str, direction: str, color: str, freq: float, index):
-        self.__cmd2datagram(f"ext mled {direction} {color} {freq} {msg}", index)
+        self.__cmd2datagram(f"EXT mled {direction} {color} {freq} {msg}", index)
 
     def ext_mon_graph_banner(self, graph: str, direction: str, color: str, freq: float, index):
-        self.__cmd2datagram(f"ext mled g {direction} {color} {freq} {graph}", index)
+        self.__cmd2datagram(f"EXT mled g {direction} {color} {freq} {graph}", index)
 
     def ext_mon_char(self, char: str, color: str, index):
         # P.S. if char == "heart" ==> display heart ^ w ^
-        self.__cmd2datagram(f"ext mled s {color} {char}", index)
+        self.__cmd2datagram(f"EXT mled s {color} {char}", index)
 
     def ext_mon_default(self, graph: str, index):
-        self.__cmd2datagram(f"ext mled sg {graph}", index)
+        self.__cmd2datagram(f"EXT mled sg {graph}", index)
 
     def ext_mon_reset(self, index):
-        self.__cmd2datagram("ext mled sc", index)
+        self.__cmd2datagram("EXT mled sc", index)
 
     def ext_mon_brightness(self, brightness: int, index):
-        self.__cmd2datagram(f"ext mled sl {brightness}", index)
+        self.__cmd2datagram(f"EXT mled sl {brightness}", index)
 
     def ext_read_tof(self, index):
-        self.__cmd2datagram("ext tof?", index)
+        self.__cmd2datagram("EXT tof?", index)
 
     def ext_read_version(self, index):
-        self.__cmd2datagram("ext version?", index)
+        self.__cmd2datagram("EXT version?", index)
