@@ -341,8 +341,8 @@ class TelloDB:
             info = tello.get_basic_info()
             status = tello.get_status()
             msg += f"Tello[{info['index']}] - {status['bat']} - {task['cmd']} - {task['result']}\n"
-            if task['result'] == "error" and task['cmd'] == "takeoff":
-                time.sleep(1)  # Wait tello release lock
+            if ("error" in task['result']) and ("takeoff" in task['cmd']):
+                time.sleep(2)  # Wait tello release lock
         return msg
 
     "Data Manage"
