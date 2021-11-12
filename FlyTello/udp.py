@@ -73,15 +73,18 @@ class Server:
             except ConnectionError:
                 self.__log.error("Recv - ConnectionError(Check network.)")
             # Filter blank and broadcast datagram
-            if (datagram[0] != b"") and (datagram[1][0] != self.__ip):
-                # Decode on demand
-                if self.__recv_decode:
-                    datagram[0] = datagram[0].decode("utf-8", errors="ignore")
-                # Add to storage
-                self.__recv_data.append(datagram)
-                self.__log.info(f"Recv - Received datagram. - {datagram}")
-                # Setup indicator
-                self.read_new = True
+            try:
+                if (datagram[0] != b"") and (datagram[1][0] != self.__ip):
+                    # Decode on demand
+                    if self.__recv_decode:
+                        datagram[0] = datagram[0].decode("utf-8", errors="ignore")
+                    # Add to storage
+                    self.__recv_data.append(datagram)
+                    self.__log.info(f"Recv - Received datagram. - {datagram}")
+                    # Setup indicator
+                    self.read_new = True
+            except IndexError:
+                pass
         self.__log.critical(f"Recv: Thread exit unexpectedly.")  # Thread shouldn't exit until any scenario.
 
     def send(self, datagram: typing.Union[tuple, list], internal: bool = False):
